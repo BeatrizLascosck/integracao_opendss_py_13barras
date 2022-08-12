@@ -1,0 +1,76 @@
+Clear 
+
+| =============================================================================================
+!
+!         SCRIPT CRIADO PARA RODAR DE MANEIRA LIMPA O CIRCUITO DE 13 BARRAS
+!
+| =============================================================================================
+
+! Carregando o circuito e o modelo de Pv
+Redirect IEEE13Nodeckt.dss
+Redirect ModeloPvSystem.dss
+!Redirect ModeloPv_Gerador.dss
+
+! ENERGYMETER
+New energymeter.medidor1 element=line.671680 terminal=1
+
+
+
+! ====================================ANOMALIA================================================
+Solve  ! RESOLVE O FLUXO DE POTÊNCIA
+/*
+! FAULT
+New Fault.3Fcurto phases=3 bus1=680 bus2=680.0.0.0 r=0.15 enable=yes
+solve mode=dynamics stepsize=0.016667 number=100
+Fault.3Fcurto.enable=yes
+solve number=100
+Fault.3Fcurto.enable=yes
+solve number=100
+*/
+!==============================================================================================
+
+
+
+! ====================================NOMALIDADE================================================
+set mode=daily
+set stepsize=1h
+set number=24
+!==============================================================================================
+
+
+solve
+BusCoords IEEE13Node_BusXY.csv
+
+
+! ==============================================================================================
+! PAINEIS DE VERIFICAÇÃO DO PV/GERADOR  => Pot. ativa e reativa
+! ==============================================================================================
+! USANDO PVSYSTEM:
+
+Plot monitor object= pv_powers1 channels=(1 3 5 )
+Plot monitor object= pv_powers1 channels=(2 4 6 )
+Plot monitor object= pv_currents1 channels=(1 3 5 )
+Plot monitor object= pv_currents1 channels=(9 11 13 )
+Plot monitor object= pv_v1 channels=(7 )
+Plot monitor object= pv_powers2 channels=(1 3 5 )
+Plot monitor object= pv_powers2 channels=(2 4 6 )
+Plot monitor object= pv_currents2 channels=(1 3 5 )
+Plot monitor object= pv_currents2 channels=(9 11 13 )
+Plot monitor object= pv_v2 channels=(7 )
+Plot monitor object= pv_powers3 channels=(1 3 5 )
+Plot monitor object= pv_powers3 channels=(2 4 6 )
+Plot monitor object= pv_currents3 channels=(1 3 5 )
+Plot monitor object= pv_currents3 channels=(9 11 13 )
+Plot monitor object= pv_v3 channels=(7 )
+
+
+
+/*
+! USANDO GENERATOR MODEL 7
+Plot monitor object= generator_power channels=(1 3 5 )
+Plot monitor object= generator_power channels=(2 4 6 )
+Plot monitor object= Generator_voltage channels=(9 11 13)
+*/
+
+Show Currents Elements
+Show Voltage LL Nodes

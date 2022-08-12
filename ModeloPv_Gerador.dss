@@ -1,0 +1,17 @@
+
+! MODELO DE GERADOR COMO APROXIMAÇÃO PARA UM PV
+
+
+New generator.PvGenerator basefreq=60 phases=3 kv=4.16 kVA=843 kW=674.4 pf=0.8 bus1=675 model=7
+~ Vminpu=0.7143 Conn=wye  Balanced=yes 
+
+New monitor.Generator_power element=generator.PvGenerator terminal=1 mode=1 ppolar=no
+New monitor.Generator_voltage element=generator.PvGenerator terminal=1 mode=0
+
+
+
+! Status=Fixed -> maxima performance enquanto gerar (Default=Variable)
+! daily=Irrad -> segue a curva de geração do Pv já modelado
+! XRdp => Default is 20. X/R ratio for Xdp property for FaultStudy and Dynamic modes.
+! BALANCED: (Default = No)
+! Para model=7, força uma corrente equilibrada apenas para geradores trifásicos. Força as sequências zero e negativa a zerarem.
