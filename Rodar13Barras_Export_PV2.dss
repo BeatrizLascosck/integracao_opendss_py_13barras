@@ -1,0 +1,30 @@
+Clear
+
+Redirect IEEE13Nodeckt.dss
+Redirect ModeloPvSystem_Modos_de_Operacao.dss
+
+
+Solve
+
+! ====================================NOMALIDADE================================================
+set mode=daily
+set stepsize=1h
+set number=24
+!==============================================================================================
+
+Solve
+
+BusCoords IEEE13Node_BusXY.csv
+
+//plotar_PV2:
+Plot monitor object= pv_powers2 channels=(1 3 5 )
+Plot monitor object= pv_powers2 channels=(2 4 6 )
+Plot monitor object= pv_currents2 channels=(1 3 5)
+
+
+Export monitor pv_powers2
+Export monitor pv_currents2
+
+
+
+Save

@@ -1,0 +1,90 @@
+New XYCurve.Eff npts=4 xarray=[.1 .2 .4 1.0] yarray=[1 1 1 1]
+
+New XYCurve.FatorPvsT npts=4 xarray=[0 25 75 100] yarray=[1 1 1 1] 
+
+New Loadshape.Irrad npts=24 interval=1 
+~ mult=[0 0 0 0 0 0 .1 .2 .3 .5 .8 .9 1.0 1.0 .99 .9 .7 .4 .1 0 0 0 0 0]
+New Tshape.Temp npts=24 interval=1 
+~ temp=[25 25 25 25 25 25 25 25 35 40 45 50 60 60 55 40 35 30 25 25 25 25 25 25]
+
+///*
+! ========================== DEFINIÇÃO DOS 3 PV's | VOLTVAR, VOLTWATT E WATTVAR ========================================
+
+New PVSystem.PV1 phases=3 bus1=675 Pmpp=1000 kV=4.16  KVA=843  conn=wye effcurve=Eff
+~ P-TCurve=FatorPvsT %Pmpp=100 irradiance=1 daily=Irrad Tdaily=Temp VarFollowInverter=true
+
+New PVSystem.PV2 phases=3 bus1=671 Pmpp=1000 kV=4.16  KVA=1155  conn=wye effcurve=Eff
+~ P-TCurve=FatorPvsT %Pmpp=100 irradiance=1 daily=Irrad Tdaily=Temp VarFollowInverter=true
+
+New PVSystem.PV3 phases=3 bus1=634 Pmpp=1000 kV=0.48  KVA=400  conn=wye effcurve=Eff
+~ P-TCurve=FatorPvsT %Pmpp=100 irradiance=1 daily=Irrad Tdaily=Temp VarFollowInverter=true
+
+! =========================================================================================
+//*/
+
+/*
+! ========================== DEFINIÇÃO DOS 3 PV's | MODOS CONSTANTES: PF E KVAR ========================================
+New PVSystem.PV1 phases=3 bus1=675 Pmpp=1000 kV=4.16  KVA=843  conn=wye effcurve=Eff
+~ P-TCurve=FatorPvsT %Pmpp=100 irradiance=1 daily=Irrad Tdaily=Temp VarFollowInverter=true
+!FATOR DE POTÊNCIA CONSTANTE
+//~ PF=1
+!KVAR CONSTANTE
+//~ kvar=370.92 PF=0.1
+
+New PVSystem.PV2 phases=3 bus1=671 Pmpp=1000 kV=4.16  KVA=1155  conn=wye effcurve=Eff
+~ P-TCurve=FatorPvsT %Pmpp=100 irradiance=1 daily=Irrad Tdaily=Temp VarFollowInverter=true
+//~ PF=1
+!KVAR CONSTANTE
+//~ kvar=508.2 PF=0.1
+
+New PVSystem.PV3 phases=3 bus1=634 Pmpp=1000 kV=0.48  KVA=400  conn=wye effcurve=Eff
+~ P-TCurve=FatorPvsT %Pmpp=100 irradiance=1 daily=Irrad Tdaily=Temp VarFollowInverter=true
+!FATOR DE POTÊNCIA CONSTANTE
+//~ PF=1
+!KVAR CONSTANTE
+//~ kvar=176 PF=0.1
+! =========================================================================================
+*/
+
+
+
+! ==========================  INVCONTROL | MODOS DE OPERAÇÃO: VOLTVAR, VOLTWATT E WATTVAR ========================================
+!PARA OS MODOS CONSTANTES (PF E KVAR) NÃO PRECISA DO INVCONTROL
+
+! OS ARRAYS DECLARADOS SÃO DA CATEGORIA A DEFAULT, SEGUNDO A NORMA IEEE1547-2018
+
+///*
+!VOLTVAR
+New XYcurve.generic npts=5 yarray=[0.25 0 0 0 -0.25] xarray=[0.9 1 1 1 1.1]
+New InvControl.VoltVar mode=VOLTVAR voltage_curvex_ref=rated vvc_curve1=generic 
+~ deltaQ_factor=0.2 RefReactivePower=VARMAX varchangetolerance=0.0001
+//*/
+
+/*
+!VOLTWATT
+New XYcurve.generic npts=3 yarray=[1 0.2 0.2] xarray=[1.06 1.1 1.1]
+New InvControl.VoltWatt mode=VOLTWATT voltage_curvex_ref=rated
+~ voltwatt_curve=generic VoltwattYAxis=PMPPPU DeltaP_factor=0.45
+*/
+
+/*
+!WATTVAR
+New XYcurve.generic npts=4 yarray=[0 0 0 -0.25] xarray=[0 0.2 0.5 1]
+New InvControl.WattVar mode=WATTVAR wattvar_curve=generic refReactivepower=varmax
+*/
+! =========================================================================================
+
+
+New Monitor.PV_currents1 element=PVSystem.PV1 terminal=1 mode=0
+New Monitor.PV_powers1 element=PVSystem.PV1 terminal=1 mode=1 ppolar=no
+New Monitor.PV_v1 element=PVSystem.PV1 terminal=1 mode=3
+
+New Monitor.PV_currents2 element=PVSystem.PV2 terminal=1 mode=0
+New Monitor.PV_powers2 element=PVSystem.PV2 terminal=1 mode=1 ppolar=no
+New Monitor.PV_v2 element=PVSystem.PV2 terminal=1 mode=3
+
+New Monitor.PV_currents3 element=PVSystem.PV3 terminal=1 mode=0
+New Monitor.PV_powers3 element=PVSystem.PV3 terminal=1 mode=1 ppolar=no
+New Monitor.PV_v3 element=PVSystem.PV3 terminal=1 mode=3
+
+set maxcontroli = 2000
